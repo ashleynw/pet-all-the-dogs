@@ -1,5 +1,5 @@
 {
-    "name": "stream #118 - As CORGUY commands!",
+    "name": "pet-all-the-dogs",
     "description": "",
     "dependencies": {
         "device": "*",
@@ -26,5 +26,5 @@
     "supportedTargets": [
         "arcade"
     ],
-    "preferredEditor": "blocksprj"
+    "preferredEditor": "tsprj"
 }

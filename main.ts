@@ -26,7 +26,6 @@ function introSequence () {
         `, SpriteKind.Camera)
     tiles.placeOnTile(invisible, tiles.getTileLocation(25, 8))
     scene.cameraFollowSprite(invisible)
-
     CorGuyTheDoorGuy = sprites.create(img`
         .............................fff....
         ..fff......................ff44f....
@@ -64,27 +63,62 @@ function introSequence () {
         `, SpriteKind.CORGUY)
     tiles.placeOnTile(CorGuyTheDoorGuy, tiles.getTileLocation(28, 0))
 
-    story.queueStoryPart(function() {
+    story.queueStoryPart(function () {
         story.spriteMoveToTile(CorGuyTheDoorGuy, tiles.getTileLocation(28, 10), 200)
     })
-    
-    story.queueStoryPart(function() {
+
+    story.queueStoryPart(function () {
         story.printDialog("Hey, I'm CorGuy the Door Guy! And you are a tumbleweed!", 70, 50, 50, 100)
     })
 
-    story.queueStoryPart(function() {
-        let tumbleWeed = sprites.create(tumbleWeedImg, SpriteKind.Player)
+    story.queueStoryPart(function () {
+        tumbleWeed = sprites.create(tumbleWeedImg, SpriteKind.Player)
         tiles.placeOnTile(tumbleWeed, tiles.getTileLocation(25, 0))
         tumbleWeed.ay = 500
     })
 
-    story.queueStoryPart(function() {
+    story.queueStoryPart(function () {
         story.printDialog("Your mission is to play with all the good pups who live on these plains", 70, 50, 50, 100)
+        createDogs()
+    })
+
+    story.queueStoryPart(function() {
+        story.spriteMoveToTile(invisible, tiles.getTileLocation(0, 8), 200)
+    })
+
+    story.queueStoryPart(function() {
+        story.spriteMoveToTile(invisible, tiles.getTileLocation(25, 8), 200)
+    })
+
+    story.queueStoryPart(function() {
+        controller.moveSprite(tumbleWeed, 100, 0)
+        scene.cameraFollowSprite(tumbleWeed)
+        invisible.destroy()
+        introFinished = true
     })
 }
+
+function createDogs () {
+    for (let dog of dogImgs) {
+        newDog = sprites.create(dog, SpriteKind.Dog)
+        tiles.placeOnRandomTile(newDog, myTiles.tile4)
+    }
+}
+
+game.onUpdateInterval(100, function() {
+    if (introFinished && tumbleWeed.isHittingTile(CollisionDirection.Bottom)){
+        tumbleWeed.vy = -200
+    }
+})
+
+let introFinished = false
+let newDog: Sprite = null
+let tumbleWeed: Sprite = null
 let CorGuyTheDoorGuy: Sprite = null
 let invisible: Sprite = null
-let tumbleWeedImg = img`
+let dogImgs: Image[] = []
+let tumbleWeedImg: Image = null
+tumbleWeedImg = img`
     . . 4 4 4 5 5 4 4 . . . . . . . 
     . 5 5 4 4 4 5 5 4 4 5 4 4 . . . 
     . 4 5 5 4 4 4 5 4 4 4 5 4 4 . . 
@@ -103,7 +137,7 @@ let tumbleWeedImg = img`
     . . 5 5 5 4 4 4 4 4 5 5 5 5 5 . 
     `
 tiles.setTilemap(tilemap`level`)
-let dogsImgs = [
+dogImgs = [
 img`
     . . . . 1 . . . . 1 . . . . . . 
     . . . . 1 1 . . 1 1 . . . . . . 

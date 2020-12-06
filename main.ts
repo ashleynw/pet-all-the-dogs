@@ -106,6 +106,14 @@ function createDogs () {
     }
 }
 
+game.onUpdate(function() {
+    let happyDogs = sprites.allOfKind(SpriteKind.HappyDog)
+    if (happyDogs.length == dogImgs.length){
+        pause(1000)
+        game.over(true)
+    }
+})
+
 game.onUpdateInterval(100, function() {
     if (introFinished && tumbleWeed.isHittingTile(CollisionDirection.Bottom) && tumbleWeed.kind() == SpriteKind.Player){
         tumbleWeed.vy = -200
@@ -118,7 +126,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Dog, function(player: Sprite, do
         player.vy = 0
         player.setKind(SpriteKind.Playmate)
         dog.setKind(SpriteKind.RunningDog)
-        player.follow(dog)
+        player.follow(dog, 200)
     })
     story.queueStoryPart(function() {
         story.spriteMoveToTile(dog, tiles.getTileLocation(randint(0, 24), 11), 200)

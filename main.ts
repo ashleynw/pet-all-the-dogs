@@ -95,14 +95,16 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Dog, function (player2, dog) {
         controller.moveSprite(player2, 0, 0)
 
         story.queueStoryPart(function () {
-            location = tiles.getTileLocation(randint(0, 24), 11)
-            story.spriteMoveToTile(dog, location, 200)
-            story.spriteMoveToTile(player2, location, 200)
+            player2.x = dog.x
+            player2.y = dog.y
+            player2.follow(dog, 200)
+            story.spriteMoveToTile(dog, tiles.getTileLocation(randint(0, 24), 11), 200)
             dog.startEffect(effects.hearts, 500)
         })
 
         story.queueStoryPart(function () {
             controller.moveSprite(player2, 100, 0)
+            player2.follow(null)
             dog.setKind(SpriteKind.HappyDog)
             isPlaying = false
         })

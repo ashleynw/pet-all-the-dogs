@@ -1,8 +1,6 @@
 namespace SpriteKind {
-    export const Playmate = SpriteKind.create()
     export const Dog = SpriteKind.create()
     export const HappyDog = SpriteKind.create()
-    export const RunningDog = SpriteKind.create()
     export const CORGUY = SpriteKind.create()
     export const Camera = SpriteKind.create()
 }
@@ -63,83 +61,69 @@ function introSequence () {
         ....fffff......ffff........ffffff...
         `, SpriteKind.CORGUY)
     tiles.placeOnTile(CorGuyTheDoorGuy, tiles.getTileLocation(28, 0))
-
     story.queueStoryPart(function () {
         story.spriteMoveToTile(CorGuyTheDoorGuy, tiles.getTileLocation(28, 10), 200)
     })
-
     story.queueStoryPart(function () {
         story.printDialog("Hey, I'm CorGuy the Door Guy! And you are a tumbleweed!", 70, 50, 50, 100)
     })
-
     story.queueStoryPart(function () {
         tumbleWeed = sprites.create(tumbleWeedImg, SpriteKind.Player)
         tiles.placeOnTile(tumbleWeed, tiles.getTileLocation(25, 0))
         tumbleWeed.ay = 500
     })
-
     story.queueStoryPart(function () {
         story.printDialog("Your mission is to play with all the good pups who live on these plains", 70, 50, 50, 100)
         createDogs()
     })
-
-    story.queueStoryPart(function() {
+    story.queueStoryPart(function () {
         story.spriteMoveToTile(invisible, tiles.getTileLocation(0, 8), 200)
     })
-
-    story.queueStoryPart(function() {
+    story.queueStoryPart(function () {
         story.spriteMoveToTile(invisible, tiles.getTileLocation(25, 8), 200)
     })
-
-    story.queueStoryPart(function() {
+    story.queueStoryPart(function () {
         controller.moveSprite(tumbleWeed, 100, 0)
         scene.cameraFollowSprite(tumbleWeed)
         invisible.destroy()
         introFinished = true
     })
 }
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Dog, function (player2, dog) {
+    if (!isPlaying){
+        isPlaying = true
+        controller.moveSprite(player2, 0, 0)
+
+        story.queueStoryPart(function () {
+            location = tiles.getTileLocation(randint(0, 24), 11)
+            story.spriteMoveToTile(dog, location, 200)
+            story.spriteMoveToTile(player2, location, 200)
+            dog.startEffect(effects.hearts, 500)
+        })
+
+        story.queueStoryPart(function () {
+            controller.moveSprite(player2, 100, 0)
+            dog.setKind(SpriteKind.HappyDog)
+            isPlaying = false
+        })
+    }
+})
 
 function createDogs () {
+    let availableTiles = tiles.getTilesByType(myTiles.tile4)
     for (let dog of dogImgs) {
         newDog = sprites.create(dog, SpriteKind.Dog)
-        tiles.placeOnRandomTile(newDog, myTiles.tile4)
+        let randomIndex = randint(0, availableTiles.length - 1)
+        let randomTile = availableTiles[randomIndex]
+        tiles.placeOnTile(newDog, randomTile)
+        availableTiles.removeAt(randomIndex)
     }
 }
-
-game.onUpdate(function() {
-    let happyDogs = sprites.allOfKind(SpriteKind.HappyDog)
-    if (happyDogs.length == dogImgs.length){
-        pause(1000)
-        game.over(true)
-    }
-})
-
-game.onUpdateInterval(100, function() {
-    if (introFinished && tumbleWeed.isHittingTile(CollisionDirection.Bottom) && tumbleWeed.kind() == SpriteKind.Player){
-        tumbleWeed.vy = -200
-    }
-})
-
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Dog, function(player: Sprite, dog: Sprite) {
-    story.queueStoryPart(function() {
-        controller.moveSprite(player, 0, 0)
-        player.vy = 0
-        player.setKind(SpriteKind.Playmate)
-        dog.setKind(SpriteKind.RunningDog)
-        player.follow(dog, 200)
-    })
-    story.queueStoryPart(function() {
-        story.spriteMoveToTile(dog, tiles.getTileLocation(randint(0, 24), 11), 200)
-    })
-    story.queueStoryPart(function() {
-        dog.setKind(SpriteKind.HappyDog)
-        player.setKind(SpriteKind.Player)
-        controller.moveSprite(player, 100, 0)
-        player.follow(null)
-    })
-})
-let introFinished = false
+let isPlaying = false
+let happyDogs: Sprite[] = []
 let newDog: Sprite = null
+let location: tiles.Location = null
+let introFinished = false
 let tumbleWeed: Sprite = null
 let CorGuyTheDoorGuy: Sprite = null
 let invisible: Sprite = null
@@ -265,3 +249,15 @@ img`
     `
 ]
 introSequence()
+game.onUpdate(function () {
+    happyDogs = sprites.allOfKind(SpriteKind.HappyDog)
+    if (happyDogs.length == dogImgs.length) {
+        pause(1000)
+        game.over(true)
+    }
+})
+game.onUpdateInterval(100, function () {
+    if (introFinished && tumbleWeed.isHittingTile(CollisionDirection.Bottom) && !isPlaying) {
+        tumbleWeed.vy = -200
+    }
+})

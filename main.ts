@@ -1,4 +1,5 @@
 namespace SpriteKind {
+    export const Playmate = SpriteKind.create()
     export const Dog = SpriteKind.create()
     export const HappyDog = SpriteKind.create()
     export const RunningDog = SpriteKind.create()
@@ -106,11 +107,29 @@ function createDogs () {
 }
 
 game.onUpdateInterval(100, function() {
-    if (introFinished && tumbleWeed.isHittingTile(CollisionDirection.Bottom)){
+    if (introFinished && tumbleWeed.isHittingTile(CollisionDirection.Bottom) && tumbleWeed.kind() == SpriteKind.Player){
         tumbleWeed.vy = -200
     }
 })
 
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Dog, function(player: Sprite, dog: Sprite) {
+    story.queueStoryPart(function() {
+        controller.moveSprite(player, 0, 0)
+        player.vy = 0
+        player.setKind(SpriteKind.Playmate)
+        dog.setKind(SpriteKind.RunningDog)
+        player.follow(dog)
+    })
+    story.queueStoryPart(function() {
+        story.spriteMoveToTile(dog, tiles.getTileLocation(randint(0, 24), 11), 200)
+    })
+    story.queueStoryPart(function() {
+        dog.setKind(SpriteKind.HappyDog)
+        player.setKind(SpriteKind.Player)
+        controller.moveSprite(player, 100, 0)
+        player.follow(null)
+    })
+})
 let introFinished = false
 let newDog: Sprite = null
 let tumbleWeed: Sprite = null

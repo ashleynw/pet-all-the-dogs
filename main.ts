@@ -90,10 +90,9 @@ function introSequence () {
     })
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Dog, function (player2, dog) {
-    if (!isPlaying){
+    if (!(isPlaying)) {
         isPlaying = true
         controller.moveSprite(player2, 0, 0)
-
         story.queueStoryPart(function () {
             player2.x = dog.x
             player2.y = dog.y
@@ -101,7 +100,6 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Dog, function (player2, dog) {
             story.spriteMoveToTile(dog, tiles.getTileLocation(randint(0, 24), 11), 200)
             dog.startEffect(effects.hearts, 500)
         })
-
         story.queueStoryPart(function () {
             controller.moveSprite(player2, 100, 0)
             player2.follow(null)
@@ -110,27 +108,29 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Dog, function (player2, dog) {
         })
     }
 })
-
 function createDogs () {
-    let availableTiles = tiles.getTilesByType(myTiles.tile4)
+    availableTiles = tiles.getTilesByType(myTiles.tile4)
     for (let dog of dogImgs) {
         newDog = sprites.create(dog, SpriteKind.Dog)
-        let randomIndex = randint(0, availableTiles.length - 1)
-        let randomTile = availableTiles[randomIndex]
+        randomIndex = randint(0, availableTiles.length - 1)
+        randomTile = availableTiles[randomIndex]
         tiles.placeOnTile(newDog, randomTile)
         availableTiles.removeAt(randomIndex)
     }
 }
-let isPlaying = false
 let happyDogs: Sprite[] = []
+let randomTile: tiles.Location = null
+let randomIndex = 0
 let newDog: Sprite = null
-let location: tiles.Location = null
+let availableTiles: tiles.Location[] = []
+let isPlaying = false
 let introFinished = false
 let tumbleWeed: Sprite = null
 let CorGuyTheDoorGuy: Sprite = null
 let invisible: Sprite = null
 let dogImgs: Image[] = []
 let tumbleWeedImg: Image = null
+let location = null
 tumbleWeedImg = img`
     . . 4 4 4 5 5 4 4 . . . . . . . 
     . 5 5 4 4 4 5 5 4 4 5 4 4 . . . 
@@ -259,7 +259,7 @@ game.onUpdate(function () {
     }
 })
 game.onUpdateInterval(100, function () {
-    if (introFinished && tumbleWeed.isHittingTile(CollisionDirection.Bottom) && !isPlaying) {
+    if (introFinished && tumbleWeed.isHittingTile(CollisionDirection.Bottom) && !(isPlaying)) {
         tumbleWeed.vy = -200
     }
 })

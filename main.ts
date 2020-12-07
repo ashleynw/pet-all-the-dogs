@@ -4,6 +4,14 @@ namespace SpriteKind {
     export const CORGUY = SpriteKind.create()
     export const Camera = SpriteKind.create()
 }
+
+game.onUpdate(function() {
+    let happyDogs = sprites.allOfKind(SpriteKind.HappyDog)
+    if (happyDogs.length == dogImgs.length){
+        game.over(true)
+    }
+})
+
 function introSequence () {
     invisibleCamera = sprites.create(img`
         . . . . . . . . . . . . . . . . 

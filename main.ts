@@ -4,14 +4,6 @@ namespace SpriteKind {
     export const CORGUY = SpriteKind.create()
     export const Camera = SpriteKind.create()
 }
-
-game.onUpdate(function() {
-    let happyDogs = sprites.allOfKind(SpriteKind.HappyDog)
-    if (happyDogs.length == dogImgs.length){
-        game.over(true)
-    }
-})
-
 function introSequence () {
     invisibleCamera = sprites.create(img`
         . . . . . . . . . . . . . . . . 
@@ -91,6 +83,7 @@ function createDogs () {
         tiles.placeOnRandomTile(newDog, myTiles.tile4)
     }
 }
+let happyDogs: Sprite[] = []
 let newDog: Sprite = null
 let isPlaying = false
 let introFinished = false
@@ -255,3 +248,9 @@ img`
     `
 ]
 introSequence()
+game.onUpdate(function () {
+    happyDogs = sprites.allOfKind(SpriteKind.HappyDog)
+    if (happyDogs.length == dogImgs.length) {
+        game.over(true)
+    }
+})
